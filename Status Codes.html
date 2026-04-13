@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Carthage · Operations Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════ TOKENS ═══════════════════════ */
+:root {
+  --bg:#f0f3f9; --surface:#fff; --surface2:#f8f9fc; --surface3:#eef1f8;
+  --border:#e1e6f0; --border-dk:#c8cfdf;
+  --text:#0d1b2a; --text-2:#3b4a5c; --muted:#6b7a90;
+  --blue:#1b4fdc; --blue-lt:#e8edfc; --blue-dk:#1240b8; --blue-dim:#4a70e3;
+  --green:#0a7a55; --green-lt:#d4f5e9; --green-dim:#12a372;
+  --red:#c91c1c; --red-lt:#fde8e8; --red-dim:#e53535;
+  --amber:#b45309; --amber-lt:#fef3cd; --amber-dim:#d97706;
+  --purple:#5b21b6; --purple-lt:#ede9fe; --purple-dim:#7c3aed;
+  --teal:#0e7490; --teal-lt:#cffafe;
+  --orange:#c2410c; --orange-lt:#fff7ed;
+  --sh-xs:0 1px 2px rgba(13,27,42,.06);
+  --sh-sm:0 1px 4px rgba(13,27,42,.08),0 1px 2px rgba(13,27,42,.05);
+  --sh-md:0 4px 14px rgba(13,27,42,.09),0 2px 5px rgba(13,27,42,.05);
+  --sh-lg:0 14px 36px rgba(13,27,42,.13),0 4px 10px rgba(13,27,42,.06);
+  --r:10px; --r-sm:7px; --r-xs:5px; --r-2xs:4px;
+  --sans:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --hTop:58px; --hProc:54px; --hStats:90px; --hBar:52px; --hTool:52px; --hHead:38px; --hFoot:30px;
+}
+body.dark {
+  --bg:#060c18; --surface:#0b1422; --surface2:#101c30; --surface3:#162438;
+  --border:#1a2b42; --border-dk:#243a56;
+  --text:#dce6f4; --text-2:#a8bcd4; --muted:#607a96;
+  --blue:#4d72f0; --blue-lt:#101e44; --blue-dk:#6b8ef5; --blue-dim:#3a5dd8;
+  --green:#10b981; --green-lt:#042618; --green-dim:#34d399;
+  --red:#f87171; --red-lt:#360909; --red-dim:#ef4444;
+  --amber:#fbbf24; --amber-lt:#281500; --amber-dim:#f59e0b;
+  --purple:#a78bfa; --purple-lt:#1b0c38; --purple-dim:#8b5cf6;
+  --teal:#22d3ee; --teal-lt:#022028;
+  --orange:#fb923c; --orange-lt:#1c0900;
+  --sh-xs:0 1px 2px rgba(0,0,0,.4); --sh-sm:0 1px 4px rgba(0,0,0,.45);
+  --sh-md:0 4px 14px rgba(0,0,0,.5); --sh-lg:0 14px 36px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow:hidden}
+body{
+  font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;transition:background .2s,color .2s;
+}
+
+/* ════ TOPBAR ════ */
+.topbar{
+  height:var(--hTop);min-height:var(--hTop);flex-shrink:0;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  box-shadow:var(--sh-sm);display:flex;align-items:center;
+  justify-content:space-between;padding:0 22px;gap:16px;z-index:50;
+}
+.topbar-l{display:flex;align-items:center;gap:14px}
+.topbar-r{display:flex;align-items:center;gap:10px}
+.logo-icon{
+  width:36px;height:36px;background:var(--blue);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(27,79,220,.28);
+}
+.logo-name{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.logo-name span{font-weight:400;color:var(--muted);margin-left:2px}
+.divv{width:1px;height:20px;background:var(--border)}
+.nav-tag{
+  font-size:11.5px;font-weight:600;color:var(--blue);
+  background:var(--blue-lt);border-radius:var(--r-2xs);padding:3px 8px;letter-spacing:.02em;
+}
+.pulse-badge{
+  display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--green-dim);
+  background:var(--green-lt);border-radius:999px;padding:3px 10px;
+}
+.pulse-dot{
+  width:6px;height:6px;background:var(--green-dim);border-radius:50%;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+.date-txt{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.icon-btn{
+  width:32px;height:32px;background:transparent;border:1px solid var(--border);
+  border-radius:var(--r-xs);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:14px;color:var(--muted);
+  transition:background .12s,border-color .12s,color .12s;
+}
+.icon-btn:hover{background:var(--blue-lt);border-color:var(--blue);color:var(--blue)}
+
+/* ════ PROCESS SWITCHER ════ */
+.proc-bar{
+  height:var(--hProc);min-height:var(--hProc);flex-shrink:0;
+  background:var(--surface2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 22px;gap:12px;
+  box-shadow:var(--sh-xs);
+}
+.proc-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.proc-group{display:flex;gap:6px;align-items:center}
+.proc-btn{
+  display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;
+  border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--surface);
+  color:var(--text-2);font-family:var(--sans);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.proc-btn .proc-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .15s;
+}
+.proc-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt)}
+.proc-btn:hover .proc-dot{background:var(--blue)}
+.proc-btn.active{
+  background:var(--blue);color:#fff;border-color:var(--blue-dk);
+  box-shadow:0 2px 8px rgba(27,79,220,.25);
+}
+.proc-btn.active .proc-dot{background:rgba(255,255,255,.7)}
+.proc-sep{
+  width:1px;height:22px;background:var(--border);margin:0 8px;
+}
+.mode-group{display:flex;gap:5px;align-items:center}
+.mode-btn{
+  display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+  border-radius:var(--r-xs);border:1.5px solid var(--border);background:transparent;
+  color:var(--muted);font-family:var(--sans);font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .15s;
+}
+.mode-btn:hover{border-color:var(--blue);color:var(--blue)}
+.mode-btn.active{background:var(--surface3);border-color:var(--blue-dim);color:var(--blue)}
+.proc-info{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--muted);
+}
+.proc-info-badge{
+  padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.badge-ar{background:var(--blue-lt);color:var(--blue)}
+.badge-edits{background:var(--purple-lt);color:var(--purple)}
+
+/* ════ KPI STRIP ════ */
+.stats-strip{
+  height:var(--hStats);min-height:var(--hStats);flex-shrink:0;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:8px 22px;
+}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  display:flex;align-items:center;gap:12px;padding:0 14px;
+  position:relative;overflow:hidden;box-shadow:var(--sh-xs);
+  transition:box-shadow .15s,transform .15s;
+}
+.kpi:hover{box-shadow:var(--sh-sm);transform:translateY(-1px)}
+.kpi-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc,var(--blue));border-radius:0 2px 2px 0}
+.kpi-icon{
+  width:34px;height:34px;border-radius:var(--r-xs);background:var(--kib,var(--blue-lt));
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+}
+.kpi-body{display:flex;flex-direction:column;gap:1px}
+.kpi-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi-value{
+  font-size:22px;font-weight:700;color:var(--text);letter-spacing:-1px;
+  line-height:1;font-variant-numeric:tabular-nums;font-family:var(--mono);
+}
+
+/* ════ MAIN PANEL ════ */
+.main{
+  flex:1;min-height:0;display:flex;flex-direction:column;
+  margin:0 22px 12px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--sh-md);overflow:hidden;
+}
+.panel-bar{
+  height:var(--hBar);min-height:var(--hBar);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;border-bottom:1px solid var(--border);
+  background:var(--surface2);gap:12px;
+}
+.panel-bar-l{display:flex;align-items:center;gap:10px}
+.panel-bar-r{display:flex;align-items:center;gap:8px}
+.panel-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.hint-pill{
+  font-size:11px;color:var(--muted);background:var(--surface3);
+  border:1px solid var(--border);border-radius:999px;padding:2px 9px;
+}
+.view-tabs{display:flex;gap:4px}
+.view-tab{
+  height:28px;padding:0 12px;border-radius:var(--r-xs);border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:var(--sans);font-size:11.5px;
+  font-weight:600;cursor:pointer;transition:all .12s;
+}
+.view-tab.active{background:var(--blue);color:#fff;border-color:var(--blue-dk)}
+.view-tab:hover:not(.active){background:var(--blue-lt);color:var(--blue);border-color:var(--blue)}
+.kbd-hint{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.kbd{
+  font-family:var(--mono);font-size:10px;padding:1px 5px;
+  border:1px solid var(--border-dk);border-radius:var(--r-2xs);
+  background:var(--surface);color:var(--muted);
+}
+
+/* toolbar */
+.toolbar{
+  height:var(--hTool);min-height:var(--hTool);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;padding:0 18px;
+  border-bottom:1px solid var(--border);background:var(--surface);
+}
+.search-box{position:relative;flex:1;max-width:320px}
+.search-box svg{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:var(--muted);pointer-events:none;width:13px;height:13px;
+}
+.search-box input{
+  width:100%;height:32px;padding:0 10px 0 30px;
+  border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--surface2);color:var(--text);font-family:var(--sans);font-size:12.5px;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-box input::placeholder{color:var(--muted)}
+.search-box input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-lt)}
+.sel-box{position:relative}
+.sel-box select{
+  appearance:none;height:32px;padding:0 24px 0 10px;
+  border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--surface2);color:var(--text);font-family:var(--sans);font-size:12px;
+  outline:none;cursor:pointer;min-width:140px;transition:border-color .15s;
+}
+.sel-box select:focus{border-color:var(--blue)}
+.sel-box::after{
+  content:'▾';position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:10px;color:var(--muted);pointer-events:none;
+}
+.toolbar-gap{flex:1}
+.count-pill{
+  font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-lt);
+  border-radius:999px;padding:3px 10px;font-family:var(--mono);white-space:nowrap;
+}
+.btn-copy-all{
+  display:flex;align-items:center;gap:5px;height:32px;padding:0 13px;
+  border:1px solid var(--blue);border-radius:var(--r-xs);background:var(--blue);color:#fff;
+  font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;
+  transition:background .12s,transform .08s,box-shadow .12s;
+  box-shadow:0 1px 4px rgba(27,79,220,.22);
+}
+.btn-copy-all:hover{background:var(--blue-dk);box-shadow:0 2px 8px rgba(27,79,220,.32)}
+.btn-copy-all:active{transform:scale(.97)}
+.btn-copy-all.done{background:var(--green-dim);border-color:var(--green-dim)}
+
+/* table */
+.table-zone{flex:1;min-height:0;overflow-y:auto;overflow-x:auto}
+.table-zone::-webkit-scrollbar{width:5px;height:5px}
+.table-zone::-webkit-scrollbar-track{background:transparent}
+.table-zone::-webkit-scrollbar-thumb{background:var(--border-dk);border-radius:99px}
+.table-zone::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;z-index:10}
+thead tr{background:var(--surface2);border-bottom:2px solid var(--border)}
+thead th{
+  padding:0 14px;height:var(--hHead);text-align:left;font-size:10px;
+  font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;user-select:none;vertical-align:middle;
+  transition:color .1s,background .1s;
+}
+thead th.sortable{cursor:pointer}
+thead th.sortable:hover{color:var(--blue);background:var(--blue-lt)}
+thead th.sort-asc,thead th.sort-desc{color:var(--blue)}
+.sort-arrow{margin-left:4px;font-size:9px;opacity:.35}
+.sort-arrow::after{content:'⇅'}
+thead th.sort-asc .sort-arrow::after{content:'▲';opacity:1}
+thead th.sort-desc .sort-arrow::after{content:'▼';opacity:1}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--blue-lt)}
+tbody tr.active-row{background:var(--blue-lt);box-shadow:inset 3px 0 0 var(--blue)}
+td{padding:10px 14px;vertical-align:middle;line-height:1.4;white-space:nowrap;font-size:12.5px;color:var(--text-2)}
+td.c-code{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--blue)}
+body.dark td.c-code{color:var(--blue-dk)}
+td.c-wrap{white-space:normal}
+.deny-text{font-size:12px;color:var(--muted);line-height:1.5;max-width:400px}
+
+/* chips */
+.chip{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 9px;
+  border-radius:999px;font-size:10.5px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
+}
+.chip-green{background:var(--green-lt);color:var(--green)}
+.chip-red{background:var(--red-lt);color:var(--red)}
+.chip-amber{background:var(--amber-lt);color:var(--amber)}
+.chip-teal{background:var(--teal-lt);color:var(--teal)}
+.chip-purple{background:var(--purple-lt);color:var(--purple)}
+.chip-blue{background:var(--blue-lt);color:var(--blue)}
+.chip-orange{background:var(--orange-lt);color:var(--orange)}
+
+/* code pills */
+.code-pill{
+  display:inline-flex;align-items:center;font-family:var(--mono);
+  font-size:11px;font-weight:500;padding:2px 7px;
+  border-radius:var(--r-2xs);white-space:nowrap;
+}
+.code-pill.carc{background:var(--blue-lt);border:1px solid rgba(27,79,220,.18);color:var(--blue)}
+body.dark .code-pill.carc{color:var(--blue-dk)}
+.code-pill.rarc{background:var(--purple-lt);border:1px solid rgba(91,33,182,.18);color:var(--purple)}
+body.dark .code-pill.rarc{color:var(--purple-dim)}
+.code-pill.empty{background:var(--surface3);border:1px solid var(--border);color:var(--muted);opacity:.7;font-style:italic}
+
+/* empty / loading */
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
+.empty-state .icon{font-size:32px;margin-bottom:10px;opacity:.4}
+.empty-state p{font-size:13px}
+.loading-state{display:flex;align-items:center;justify-content:center;padding:60px 24px;color:var(--muted)}
+.spinner{
+  width:22px;height:22px;border:2px solid var(--border);
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin .7s linear infinite;margin-right:10px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ════ AR EDIT MODAL ════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(6,12,24,.52);z-index:300;
+  opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-48%);
+  width:min(560px,96vw);background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--sh-lg);z-index:301;
+  display:flex;flex-direction:column;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+}
+.modal-box.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%)}
+.modal-hdr{
+  height:50px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;border-bottom:1px solid var(--border);background:var(--surface2);
+  border-radius:var(--r) var(--r) 0 0;flex-shrink:0;
+}
+.modal-hdr h3{font-size:13.5px;font-weight:700;color:var(--text)}
+.modal-close{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:var(--r-2xs);
+  background:transparent;cursor:pointer;font-size:13px;display:flex;align-items:center;
+  justify-content:center;color:var(--muted);transition:all .12s;
+}
+.modal-close:hover{background:var(--red-lt);color:var(--red);border-color:var(--red)}
+.modal-body{padding:20px 18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:70vh}
+.modal-field label{
+  display:block;font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:5px;
+}
+.modal-field select{
+  width:100%;height:34px;padding:0 10px;border:1px solid var(--border);
+  border-radius:var(--r-xs);background:var(--surface2);color:var(--text);
+  font-family:var(--sans);font-size:12.5px;outline:none;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7a90'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
+}
+.modal-field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-lt)}
+.modal-foot{
+  padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;
+  background:var(--surface2);border-radius:0 0 var(--r) var(--r);flex-shrink:0;
+}
+.modal-btn{
+  flex:1;height:34px;border-radius:var(--r-xs);font-family:var(--sans);
+  font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background .12s;
+}
+.modal-btn.primary{background:var(--blue);color:#fff}
+.modal-btn.primary:hover{background:var(--blue-dk)}
+.modal-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.modal-btn.ghost:hover{background:var(--blue-lt);border-color:var(--blue)}
+
+/* ════ STATUS BAR ════ */
+.sbar{
+  height:var(--hFoot);min-height:var(--hFoot);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;background:var(--surface2);border-top:1px solid var(--border);
+  font-size:10.5px;color:var(--muted);
+}
+.sbar-l,.sbar-r{display:flex;align-items:center;gap:14px}
+.sbar-sep{opacity:.4}
+
+/* ════ TOAST ════ */
+#toast{
+  position:fixed;bottom:38px;right:26px;background:var(--text);color:var(--surface);
+  font-size:12px;font-weight:500;padding:9px 15px;border-radius:var(--r-sm);
+  box-shadow:var(--sh-lg);opacity:0;transform:translateY(8px);
+  transition:opacity .18s,transform .18s;pointer-events:none;z-index:9999;max-width:320px;
+}
+#toast.show{opacity:1;transform:translateY(0)}
+
+/* ════ DRAWER ════ */
+#overlay{
+  position:fixed;inset:0;background:rgba(6,12,24,.48);z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(3px);
+}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{
+  position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);
+  background:var(--surface);border-left:1px solid var(--border);
+  box-shadow:-10px 0 36px rgba(6,12,24,.18);
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  z-index:201;display:flex;flex-direction:column;
+}
+#drawer.open{transform:translateX(0)}
+.drw-hdr{
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0;
+}
+.drw-hdr h3{font-size:13.5px;font-weight:700}
+.drw-close{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:var(--r-2xs);
+  background:transparent;cursor:pointer;font-size:13px;display:flex;align-items:center;
+  justify-content:center;color:var(--muted);transition:background .12s,color .12s,border-color .12s;
+}
+.drw-close:hover{background:var(--red-lt);color:var(--red);border-color:var(--red)}
+.drw-body{flex:1;overflow-y:auto;padding:18px}
+.drw-field{margin-bottom:14px}
+.drw-field label{
+  display:block;font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:4px;
+}
+.drw-field .val{
+  font-size:12.5px;color:var(--text);background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--r-xs);
+  padding:8px 11px;line-height:1.5;min-height:34px;word-break:break-word;
+}
+.drw-field .val.mono{font-family:var(--mono);font-size:12px;color:var(--blue)}
+body.dark .drw-field .val.mono{color:var(--blue-dk)}
+.drw-field .val.rarc-val{font-family:var(--mono);font-size:12px;color:var(--purple)}
+body.dark .drw-field .val.rarc-val{color:var(--purple-dim)}
+.drw-foot{padding:13px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.drw-btn{
+  flex:1;height:34px;border-radius:var(--r-xs);font-family:var(--sans);
+  font-size:12px;font-weight:600;cursor:pointer;border:none;
+  transition:background .12s,transform .08s;
+}
+.drw-btn:active{transform:scale(.98)}
+.drw-btn.primary{background:var(--blue);color:#fff}
+.drw-btn.primary:hover{background:var(--blue-dk)}
+.drw-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.drw-btn.ghost:hover{background:var(--blue-lt);border-color:var(--blue)}
+
+/* ════ RESPONSIVE ════ */
+@media(max-width:900px){
+  .stats-strip{grid-template-columns:repeat(2,1fr)}
+  .proc-info{display:none}
+  .hint-pill{display:none}
+}
+@media(max-width:600px){
+  .topbar{padding:0 14px}
+  .proc-bar{padding:0 14px;flex-wrap:wrap;height:auto;min-height:var(--hProc);padding:8px 14px}
+  .stats-strip{padding:8px 14px;grid-template-columns:repeat(2,1fr)}
+  .main{margin:0 10px 10px}
+  .toolbar{padding:0 10px;flex-wrap:wrap;height:auto;padding:8px 10px}
+  .kpi-value{font-size:18px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-l">
+    <div class="logo-icon">🏥</div>
+    <span class="logo-name">AR RCM STATUS | ACTION <span>SUB-CATEGORY</span></span>
+    <div class="divv"></div>
+    <span class="nav-tag" id="moduleTag">Operations Dashboard</span>
+    <div class="divv"></div>
+    <div class="pulse-badge">
+      <span class="pulse-dot"></span>
+      Live Data
+    </div>
+  </div>
+  <div class="topbar-r">
+    <span class="date-txt" id="dateBadge"></span>
+    <div class="divv"></div>
+    <button class="icon-btn" id="darkBtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<!-- PROCESS SWITCHER -->
+<div class="proc-bar">
+  <span class="proc-label">Process</span>
+  <div class="proc-group">
+    <button class="proc-btn active" id="procA" onclick="switchProcess('A')">
+      <span class="proc-dot"></span>
+      Carthage
+    </button>
+    <button class="proc-btn" id="procB" onclick="switchProcess('B')">
+      <span class="proc-dot"></span>
+      Process B
+    </button>
+  </div>
+  <div class="proc-sep"></div>
+  <span class="proc-label">Module</span>
+  <div class="mode-group">
+    <button class="mode-btn active" id="modeAR" onclick="switchMode('AR')">
+      📊 AR Status Codes
+    </button>
+    <button class="mode-btn" id="modeEdits" onclick="switchMode('Edits')">
+      ✏️ Edits Status Codes
+    </button>
+  </div>
+  <div class="proc-info">
+    <span id="dataSourceLabel" class="proc-info-badge badge-ar">AR · GitHub CSV</span>
+    <span id="lastRefresh"></span>
+  </div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="stats-strip">
+  <div class="kpi" style="--kc:var(--blue);--kib:var(--blue-lt)">
+    <div class="kpi-bar"></div>
+    <div class="kpi-icon">📊</div>
+    <div class="kpi-body">
+      <div class="kpi-label">Total Records</div>
+      <div class="kpi-value" id="statTotal">—</div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:var(--green-dim);--kib:var(--green-lt)">
+    <div class="kpi-bar"></div>
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-body">
+      <div class="kpi-label" id="kpiLabel2">Resolved</div>
+      <div class="kpi-value" id="statResolved">—</div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:var(--red-dim);--kib:var(--red-lt)">
+    <div class="kpi-bar"></div>
+    <div class="kpi-icon">⚠️</div>
+    <div class="kpi-body">
+      <div class="kpi-label" id="kpiLabel3">Exceptions</div>
+      <div class="kpi-value" id="statException">—</div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:var(--purple-dim);--kib:var(--purple-lt)">
+    <div class="kpi-bar"></div>
+    <div class="kpi-icon">🔍</div>
+    <div class="kpi-body">
+      <div class="kpi-label">Visible</div>
+      <div class="kpi-value" id="statVisible">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<main class="main">
+  <!-- Panel Header -->
+  <div class="panel-bar">
+    <div class="panel-bar-l">
+      <span class="panel-title" id="panelTitle">AR Status — Statusing Action with Outcome</span>
+      <span class="hint-pill" id="hintPill">Single-click copies · Double-click for detail</span>
+    </div>
+    <div class="panel-bar-r">
+      <div class="kbd-hint">
+        <span class="kbd">/</span><span>search</span>
+        <span style="margin-left:6px;opacity:.4">·</span>
+        <span class="kbd">Esc</span><span>close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE VIEW (only view now) -->
+  <div id="tableView" style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search all columns…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="sel-box">
+        <select id="catFilter"><option value="">All Categories</option></select>
+      </div>
+      <div class="sel-box">
+        <select id="subFilter"><option value="">All Sub-Categories</option></select>
+      </div>
+      <div class="toolbar-gap"></div>
+      <span class="count-pill" id="countPill">— results</span>
+      <button class="btn-copy-all" id="editFieldsBtn" onclick="openEditModal()" style="display:none;background:var(--amber-dim);border-color:var(--amber-dim);margin-right:6px">✏️ Change Fields</button>
+      <button class="btn-copy-all" id="copyAllBtn" onclick="copyAllRows()">📋 Copy All Rows</button>
+    </div>
+
+    <!-- Table Zone -->
+    <div class="table-zone" id="tableZone">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <span>Loading data from GitHub…</span>
+      </div>
+      <table id="mainTable" style="display:none">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="icon">🔍</div>
+        <p>No records match your current filters.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- STATUS BAR -->
+<footer class="sbar">
+  <div class="sbar-l">
+    <span>🏥 Carthage Health Systems</span>
+    <span class="sbar-sep">·</span>
+    <span id="sbarProcess">Carthage</span>
+    <span class="sbar-sep">·</span>
+    <span id="sbarMode">AR Status Codes</span>
+    <span class="sbar-sep">·</span>
+    <span>Confidential Internal Use Only</span>
+  </div>
+  <div class="sbar-r">
+    <span id="sbarHint1">Click = copy fields</span>
+    <span class="sbar-sep">·</span>
+    <span id="sbarHint2">Double-click = detail view</span>
+    <span class="sbar-sep">·</span>
+    <span><kbd class="kbd">Esc</kbd> closes panel</span>
+  </div>
+</footer>
+
+<!-- OVERLAY + DRAWER -->
+<div id="overlay" onclick="closeDrawer()"></div>
+<aside id="drawer">
+  <div class="drw-hdr">
+    <h3 id="drawerTitle">Record Detail</h3>
+    <button class="drw-close" onclick="closeDrawer()" aria-label="Close">✕</button>
+  </div>
+  <div class="drw-body" id="drawerBody"></div>
+  <div class="drw-foot">
+    <button class="drw-btn primary" onclick="copyDrawerData()">📋 Copy All Fields</button>
+    <button class="drw-btn ghost" onclick="closeDrawer()">Close</button>
+  </div>
+</aside>
+
+<!-- AR EDIT MODAL OVERLAY -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeEditModal()"></div>
+<div id="editModal" class="modal-box">
+  <div class="modal-hdr">
+    <h3>✏️ Change Field Values — AR Status Code</h3>
+    <button class="modal-close" onclick="closeEditModal()">✕</button>
+  </div>
+  <div class="modal-body" id="editModalBody">
+    <!-- Populated dynamically per AR CSV columns -->
+  </div>
+  <div class="modal-foot">
+    <button class="modal-btn primary" onclick="applyEditModal()">✅ Apply to Filter</button>
+    <button class="modal-btn ghost" onclick="resetEditModal()">↺ Reset All</button>
+    <button class="modal-btn ghost" onclick="closeEditModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   CONFIGURATION
+════════════════════════════════════════════ */
+const GITHUB_BASE = 'https://raw.githubusercontent.com/kunalvaish49-cpu/Status-Code-Data/9185fe13e26aaafd31ddec3b8a7f3a37ca05e0fc/';
+const CSV_URLS = {
+  AR:    GITHUB_BASE + 'AR%20Status%20Code%20Data%20CSV.csv',
+  Edits: GITHUB_BASE + 'Edits%20Status%20Code%20Data%20CSV.csv'
+};
+
+/* ── State ─────────────────────────────────── */
+let currentProcess = 'A';
+let currentMode    = 'AR';
+let sortCol = -1, sortDir = 1;
+let activeRow = null;
+let _ct = null;
+const dataCache = { A:{}, B:{} };
+
+// AR filter state: { headerName: selectedValue }
+let arFieldFilters = {};
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+document.getElementById('dateBadge').textContent =
+  new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+loadData();
+
+/* ════════════════════════════════════════════
+   PROCESS & MODE SWITCHING
+════════════════════════════════════════════ */
+function switchProcess(p) {
+  currentProcess = p;
+  arFieldFilters = {};
+  document.getElementById('procA').classList.toggle('active', p === 'A');
+  document.getElementById('procB').classList.toggle('active', p === 'B');
+  document.getElementById('sbarProcess').textContent = 'Process ' + p;
+  updateLabels();
+  loadData();
+}
+
+function switchMode(m) {
+  currentMode = m;
+  arFieldFilters = {};
+  document.getElementById('modeAR').classList.toggle('active', m === 'AR');
+  document.getElementById('modeEdits').classList.toggle('active', m === 'Edits');
+  updateLabels();
+  loadData();
+}
+
+function updateLabels() {
+  const isAR = currentMode === 'AR';
+  document.getElementById('moduleTag').textContent = `Process ${currentProcess} · ${isAR ? 'AR Status Codes' : 'Edits Status Codes'}`;
+  document.getElementById('sbarMode').textContent  = isAR ? 'AR Status Codes' : 'Edits Status Codes';
+
+  const badge = document.getElementById('dataSourceLabel');
+  badge.textContent = isAR ? 'AR · GitHub CSV' : 'Edits · GitHub CSV';
+  badge.className   = 'proc-info-badge ' + (isAR ? 'badge-ar' : 'badge-edits');
+
+  document.getElementById('panelTitle').textContent = `${isAR ? 'AR Status' : 'Edits Status'} — Process ${currentProcess}`;
+  document.getElementById('kpiLabel2').textContent  = isAR ? 'Jorie Resolved' : 'Corrected';
+  document.getElementById('kpiLabel3').textContent  = 'Exceptions';
+
+  // Status bar hints differ by mode
+  if (isAR) {
+    document.getElementById('sbarHint1').textContent = 'Click = copy all fields';
+    document.getElementById('sbarHint2').textContent = 'Double-click = detail view';
+    document.getElementById('hintPill').textContent  = 'Single-click copies all fields · Double-click for detail';
+  } else {
+    document.getElementById('sbarHint1').textContent = 'Left-click = copy 3 cols · Right-click = copy 2 cols';
+    document.getElementById('sbarHint2').textContent = 'Double-click = detail view';
+    document.getElementById('hintPill').textContent  = 'Left-click copies 3 cols · Right-click copies 2 cols · Double-click for detail';
+  }
+
+  // Show/hide AR "Change Fields" button
+  document.getElementById('editFieldsBtn').style.display = isAR ? '' : 'none';
+}
+
+/* ════════════════════════════════════════════
+   CSV FETCH & PARSE
+════════════════════════════════════════════ */
+async function loadData() {
+  if (dataCache[currentProcess][currentMode]) {
+    renderData(dataCache[currentProcess][currentMode]);
+    return;
+  }
+  showLoading(true);
+  try {
+    const res  = await fetch(CSV_URLS[currentMode]);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const data = parseCSV(text);
+    // Both processes share same CSV data (same source CSV for A and B)
+    dataCache['A'][currentMode] = data;
+    dataCache['B'][currentMode] = data;
+    renderData(data);
+    const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('lastRefresh').textContent = 'Updated ' + now;
+  } catch(e) {
+    showLoading(false);
+    showError('Could not load CSV from GitHub. Error: ' + e.message);
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (!lines.length) return { headers:[], rows:[] };
+  const headers = parseCSVLine(lines[0]);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const cells = parseCSVLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (cells[idx] || '').trim(); });
+    rows.push(obj);
+  }
+  return { headers, rows };
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+    else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+/* ════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════ */
+function showLoading(show) {
+  document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+  document.getElementById('mainTable').style.display    = show ? 'none' : '';
+  document.getElementById('emptyState').style.display   = 'none';
+}
+function showError(msg) {
+  document.getElementById('loadingState').innerHTML = `<span style="color:var(--red)">⚠ ${msg}</span>`;
+  document.getElementById('loadingState').style.display = 'flex';
+}
+
+function renderData(data) {
+  showLoading(false);
+  const { headers, rows } = data;
+  renderHeaders(headers);
+  renderRows(headers, rows);
+  populateFilters(headers, rows);
+  applyFilters();
+  attachRowEvents();
+  resetSort();
+  updateLabels();
+}
+
+function renderHeaders(headers) {
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = '<tr>' + headers.map((h, i) =>
+    `<th class="sortable" data-col="${i}">${esc(h)}<span class="sort-arrow"></span></th>`
+  ).join('') + '</tr>';
+
+  thead.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = +th.dataset.col;
+      if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+      thead.querySelectorAll('th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+      const tbody = document.getElementById('tableBody');
+      [...tbody.querySelectorAll('tr')].sort((a, b) => {
+        const av = a.cells[col]?.textContent?.trim() || '';
+        const bv = b.cells[col]?.textContent?.trim() || '';
+        return av.localeCompare(bv, undefined, {numeric:true}) * sortDir;
+      }).forEach(r => tbody.appendChild(r));
+      applyFilters();
+    });
+  });
+}
+
+function resetSort() { sortCol = -1; sortDir = 1; }
+
+function renderRows(headers, rows) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  const isAR = currentMode === 'AR';
+
+  rows.forEach((obj, idx) => {
+    const tr = document.createElement('tr');
+    headers.forEach((h, i) => { tr.dataset['f' + i] = obj[h] || ''; });
+    tr.dataset.rowIndex = idx;
+
+    headers.forEach((h, i) => {
+      const td  = document.createElement('td');
+      const val = (obj[h] || '').trim();
+
+      if (/carc/i.test(h) && val) {
+        td.innerHTML = `<span class="code-pill carc">${esc(val)}</span>`;
+      } else if (/rarc/i.test(h)) {
+        td.innerHTML = val ? `<span class="code-pill rarc">${esc(val)}</span>` : `<span class="code-pill empty">—</span>`;
+      } else if (isAR && /category/i.test(h)) {
+        td.innerHTML = chipify(val);
+        tr.dataset.cat = tr.dataset.cat || val;
+      } else if (!isAR && /outcome/i.test(h)) {
+        // Edits: Outcome by Jorie
+        td.innerHTML = chipifyEdits(val);
+        tr.dataset.cat = tr.dataset.cat || val;
+      } else if (!isAR && /final.?category|bucket/i.test(h)) {
+        // Edits: Final Category/Bucket
+        td.innerHTML = `<span class="code-pill" style="background:var(--purple-lt);border:1px solid rgba(91,33,182,.15);color:var(--purple);font-size:11px;font-weight:600">${esc(val)}</span>`;
+        tr.dataset.sub = tr.dataset.sub || val;
+      } else if (/sub.?cat|sub.?category/i.test(h)) {
+        td.innerHTML = `<span style="font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:500">${esc(val)}</span>`;
+        tr.dataset.sub = tr.dataset.sub || val;
+      } else if (/denial reason|reason/i.test(h)) {
+        td.className = 'c-wrap';
+        td.innerHTML = `<span class="deny-text">${esc(val)}</span>`;
+      } else if (/action|queue|source/i.test(h)) {
+        td.className = 'c-code';
+        td.textContent = val;
+      } else {
+        td.textContent = val;
+      }
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function chipify(val) {
+  let cls = 'chip-blue';
+  if (/jorie resolved|resolved/i.test(val))       cls = 'chip-green';
+  else if (/exception/i.test(val))                cls = 'chip-red';
+  else if (/assistance needed|nsha/i.test(val))   cls = 'chip-amber';
+  else if (/tasked/i.test(val))                   cls = 'chip-purple';
+  else if (/paid|closed/i.test(val))              cls = 'chip-teal';
+  return `<span class="chip ${cls}">${esc(val)}</span>`;
+}
+
+function chipifyEdits(val) {
+  let cls = 'chip-blue';
+  if (/corrected/i.test(val))   cls = 'chip-green';
+  else if (/exception/i.test(val)) cls = 'chip-red';
+  else if (/assistance|nsha/i.test(val)) cls = 'chip-amber';
+  return `<span class="chip ${cls}">${esc(val)}</span>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ════════════════════════════════════════════
+   FILTERS (toolbar dropdowns)
+════════════════════════════════════════════ */
+function populateFilters(headers, rows) {
+  const isAR = currentMode === 'AR';
+  const catSel = document.getElementById('catFilter');
+  const subSel = document.getElementById('subFilter');
+
+  let catHeader, subHeader;
+  if (isAR) {
+    catHeader = headers.find(h => /category/i.test(h) && !/sub/i.test(h));
+    subHeader = headers.find(h => /sub.?cat/i.test(h));
+  } else {
+    catHeader = headers.find(h => /outcome/i.test(h));
+    subHeader = headers.find(h => /final.?category|bucket/i.test(h));
+  }
+
+  catSel.innerHTML = `<option value="">All ${isAR ? 'Categories' : 'Outcomes'}</option>`;
+  subSel.innerHTML = `<option value="">All ${isAR ? 'Sub-Categories' : 'Final Categories'}</option>`;
+
+  if (catHeader) {
+    [...new Set(rows.map(r => r[catHeader]).filter(Boolean))].sort()
+      .forEach(v => catSel.innerHTML += `<option value="${esc(v)}">${esc(v)}</option>`);
+  }
+  if (subHeader) {
+    [...new Set(rows.map(r => r[subHeader]).filter(Boolean))].sort()
+      .forEach(v => subSel.innerHTML += `<option value="${esc(v)}">${esc(v)}</option>`);
+  }
+}
+
+function applyFilters() {
+  const term = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat  = document.getElementById('catFilter').value;
+  const sub  = document.getElementById('subFilter').value;
+  let vis = 0;
+
+  document.querySelectorAll('#tableBody tr').forEach(row => {
+    let show = true;
+
+    // Text search
+    if (term && !row.textContent.toLowerCase().includes(term)) show = false;
+
+    // Dropdown filters
+    if (show && cat && row.dataset.cat !== cat) show = false;
+    if (show && sub && row.dataset.sub !== sub) show = false;
+
+    // AR field filters from modal
+    if (show && currentMode === 'AR' && Object.keys(arFieldFilters).length) {
+      const cached = dataCache[currentProcess][currentMode];
+      if (cached) {
+        for (const [hName, selVal] of Object.entries(arFieldFilters)) {
+          if (!selVal) continue;
+          const idx = cached.headers.indexOf(hName);
+          if (idx >= 0 && row.dataset['f' + idx] !== selVal) { show = false; break; }
+        }
+      }
+    }
+
+    row.style.display = show ? '' : 'none';
+    if (show) vis++;
+  });
+
+  document.getElementById('emptyState').style.display = vis === 0 ? 'block' : 'none';
+  updateStats(vis);
+}
+
+document.getElementById('searchInput').addEventListener('input', () => {
+  clearTimeout(window._sd); window._sd = setTimeout(applyFilters, 160);
+});
+document.getElementById('catFilter').addEventListener('change', applyFilters);
+document.getElementById('subFilter').addEventListener('change', applyFilters);
+
+/* ════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════ */
+function updateStats(vis) {
+  const all = document.querySelectorAll('#tableBody tr');
+  let resolved = 0, exceptions = 0;
+  all.forEach(r => {
+    const txt = r.textContent.toLowerCase();
+    if (/corrected|jorie resolved|edit resolved/.test(txt)) resolved++;
+    if (/exception|assistance/.test(txt)) exceptions++;
+  });
+  document.getElementById('statTotal').textContent     = all.length;
+  document.getElementById('statResolved').textContent  = resolved;
+  document.getElementById('statException').textContent = exceptions;
+  document.getElementById('statVisible').textContent   = vis;
+  document.getElementById('countPill').textContent     = `${vis} result${vis !== 1 ? 's' : ''}`;
+}
+
+/* ════════════════════════════════════════════
+   ROW EVENTS
+════════════════════════════════════════════ */
+function attachRowEvents() {
+  const tbody = document.getElementById('tableBody');
+
+  // Remove old listeners by replacing with clone
+  const newTbody = tbody.cloneNode(true);
+  tbody.parentNode.replaceChild(newTbody, tbody);
+
+  const tb = document.getElementById('tableBody');
+  const isAR = currentMode === 'AR';
+
+  // ── Left click ──────────────────────────────
+  tb.onclick = e => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    clearTimeout(_ct);
+    _ct = setTimeout(() => {
+      if (currentMode === 'AR') {
+        // AR: copy ALL fields
+        const fields = getOrderedFields(row);
+        navigator.clipboard.writeText(fields.join('\t'))
+          .then(() => showToast('✓ All AR fields copied to clipboard'))
+          .catch(() => showToast('Copy failed'));
+      } else {
+        // Edits: copy 3 columns — Rejection/Status Code, Root Cause/Trigger, Action/Queue
+        const cached = dataCache[currentProcess][currentMode];
+        if (!cached) return;
+        const h = cached.headers;
+        const col0 = findHeaderIdx(h, /rejection|status.?code/i);
+        const col1 = findHeaderIdx(h, /root.?cause|trigger/i);
+        const col2 = findHeaderIdx(h, /action|queue/i);
+        const vals = [col0, col1, col2]
+          .filter(i => i >= 0)
+          .map(i => row.dataset['f' + i] || '');
+        navigator.clipboard.writeText(vals.join('\t'))
+          .then(() => showToast('✓ Copied: Rejection / Root Cause / Action'))
+          .catch(() => showToast('Copy failed'));
+      }
+      document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('active-row'));
+      row.classList.add('active-row');
+      activeRow = row;
+    }, 220);
+  };
+
+  // ── Right click (Edits only) ─────────────────
+  tb.oncontextmenu = e => {
+    if (currentMode !== 'Edits') return; // AR: default context menu
+    e.preventDefault();
+    const row = e.target.closest('tr');
+    if (!row) return;
+    clearTimeout(_ct);
+    const cached = dataCache[currentProcess][currentMode];
+    if (!cached) return;
+    const h = cached.headers;
+    const col3 = findHeaderIdx(h, /outcome/i);
+    const col4 = findHeaderIdx(h, /final.?category|bucket/i);
+    const vals = [col3, col4]
+      .filter(i => i >= 0)
+      .map(i => row.dataset['f' + i] || '');
+    navigator.clipboard.writeText(vals.join('\t'))
+      .then(() => showToast('✓ Copied: Outcome by Jorie / Final Category'))
+      .catch(() => showToast('Copy failed'));
+    document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('active-row'));
+    row.classList.add('active-row');
+    activeRow = row;
+  };
+
+  // ── Double click → Drawer ───────────────────
+  tb.ondblclick = e => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    clearTimeout(_ct);
+    openDrawer(row);
+  };
+}
+
+function findHeaderIdx(headers, regex) {
+  return headers.findIndex(h => regex.test(h));
+}
+
+function getOrderedFields(row) {
+  return Object.keys(row.dataset)
+    .filter(k => k.startsWith('f'))
+    .sort((a, b) => +a.slice(1) - +b.slice(1))
+    .map(k => row.dataset[k]);
+}
+
+/* ════════════════════════════════════════════
+   DRAWER
+════════════════════════════════════════════ */
+function openDrawer(row) {
+  activeRow = row;
+  const cached  = dataCache[currentProcess][currentMode];
+  const headers = cached ? cached.headers : [];
+
+  document.getElementById('drawerTitle').textContent =
+    currentMode === 'AR' ? 'AR Record Detail' : 'Edits Record Detail';
+
+  document.getElementById('drawerBody').innerHTML = headers.map((h, i) => {
+    const val = row.dataset['f' + i] || '—';
+    let cls = '';
+    if (/carc/i.test(h)) cls = 'mono';
+    if (/rarc/i.test(h)) cls = 'rarc-val';
+    return `<div class="drw-field">
+      <label>${esc(h)}</label>
+      <div class="val${cls ? ' '+cls : ''}">${esc(val)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function copyDrawerData() {
+  if (!activeRow) return;
+  const text = getOrderedFields(activeRow).join('\t');
+  navigator.clipboard.writeText(text)
+    .then(() => { showToast('✓ All fields copied'); closeDrawer(); })
+    .catch(() => showToast('Copy failed'));
+}
+
+/* ════════════════════════════════════════════
+   COPY ALL ROWS
+════════════════════════════════════════════ */
+function copyAllRows() {
+  const rows = [...document.querySelectorAll('#tableBody tr')]
+    .filter(r => r.style.display !== 'none');
+  if (!rows.length) { showToast('No visible rows to copy'); return; }
+
+  const cached = dataCache[currentProcess][currentMode];
+  const header = cached ? cached.headers.join('\t') : '';
+  const lines  = rows.map(r => getOrderedFields(r).join('\t'));
+
+  navigator.clipboard.writeText([header, ...lines].join('\n')).then(() => {
+    const btn = document.getElementById('copyAllBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('done');
+    showToast(`✓ ${lines.length} row${lines.length !== 1 ? 's' : ''} copied`);
+    setTimeout(() => { btn.innerHTML = '📋 Copy All Rows'; btn.classList.remove('done'); }, 2000);
+  }).catch(() => showToast('Copy failed'));
+}
+
+/* ════════════════════════════════════════════
+   AR EDIT MODAL — Change Field Values
+════════════════════════════════════════════ */
+// Which AR columns are filterable via the modal
+const AR_FILTERABLE = [
+  /status.?code|rejection/i,
+  /action.?code/i,
+  /^source$/i,
+  /^category$/i,
+  /sub.?cat/i
+];
+
+function openEditModal() {
+  if (currentMode !== 'AR') return;
+  const cached = dataCache[currentProcess][currentMode];
+  if (!cached) { showToast('Data not loaded yet'); return; }
+
+  const { headers, rows } = cached;
+  const body = document.getElementById('editModalBody');
+  body.innerHTML = '';
+
+  // Find matching headers
+  const filterableHeaders = headers.filter(h =>
+    AR_FILTERABLE.some(rx => rx.test(h))
+  );
+
+  if (!filterableHeaders.length) {
+    body.innerHTML = '<p style="color:var(--muted);font-size:13px">No filterable columns found in AR CSV.</p>';
+  } else {
+    filterableHeaders.forEach(h => {
+      const uniqueVals = [...new Set(rows.map(r => r[h]).filter(Boolean))].sort();
+      const current    = arFieldFilters[h] || '';
+
+      const field = document.createElement('div');
+      field.className = 'modal-field';
+      field.innerHTML = `
+        <label>${esc(h)}</label>
+        <select data-header="${esc(h)}">
+          <option value="">— All —</option>
+          ${uniqueVals.map(v => `<option value="${esc(v)}"${v === current ? ' selected' : ''}>${esc(v)}</option>`).join('')}
+        </select>`;
+      body.appendChild(field);
+    });
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('editModal').classList.remove('open');
+}
+
+function applyEditModal() {
+  arFieldFilters = {};
+  document.querySelectorAll('#editModalBody select').forEach(sel => {
+    const h = sel.dataset.header;
+    if (sel.value) arFieldFilters[h] = sel.value;
+  });
+  closeEditModal();
+  applyFilters();
+  const count = Object.keys(arFieldFilters).length;
+  if (count) showToast(`✓ ${count} field filter${count > 1 ? 's' : ''} applied`);
+  else showToast('All field filters cleared');
+}
+
+function resetEditModal() {
+  document.querySelectorAll('#editModalBody select').forEach(s => s.value = '');
+}
+
+/* ════════════════════════════════════════════
+   DARK MODE
+════════════════════════════════════════════ */
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  document.getElementById('darkBtn').textContent =
+    document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ════════════════════════════════════════════
+   KEYBOARD
+════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeDrawer(); closeEditModal(); }
+  if (e.key === '/' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+</script>
+
+</body>
+</html>
