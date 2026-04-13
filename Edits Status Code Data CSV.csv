@@ -1,0 +1,59 @@
+﻿Issue Type,Sub-Category,Tasking Reason,Category,Outcome
+Incorrect/Invalid/Missing Auth#,Authorization / Admission,Assistance Required,Assistance Needed From NSHA,Missing/Invalid Authorization
+Incorrect/Invalid/Missing Auth#,Authorization / Admission,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Manually split profee on UB,Charges,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Manually split profee on UB,Charges,Tasked_Charge Master,Exception,Charges Issue
+No Charges,Charges,Tasked_Charge Master,Exception,Charges Issue
+Claim Frequency Code/Claim# Required,Claim# / Resubmisson Code,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Claim Paid,Already Paid,Claim Ignored,Resolved,Correction Done
+Duplicate Claim,Alread Paid/Dup Service,Claim Ignored,Resolved,Correction Done
+Duplicate Claim,Alread Paid/Dup Service,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Payer No Longer Accept Paper Claim,Claim# / Payer Related,Route to Insurance,Resolved,Correction Done
+Rejected_Invalid Payer id,Claim# / Payer Related,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Condition Code,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Condition Code,Coding,Condition Code Updated,Resolved,Correction Done
+Incorrect/Invalid/Missing DOS,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing DOS,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Dx,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Dx,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Modifier,CG Modifier,Changes Queue,Resolved,Correction Done
+Incorrect/Invalid/Missing Modifier,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing POS,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Revenue Code/CPT/HCPCS,Coding,Tasked_Coding,Exception,Coding Issue
+Incorrect/Invalid/Missing Type Bill,Coding,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Unit Of Service,Coding,Tasked_Coding,Exception,Coding Issue
+Invalid/Missing CPT Code/HCPCS,Coding,Tasked_Coding,Exception,Coding Issue
+Value Code Missing/Mismatch,Coding,Tasked_Coding,Exception,Coding Issue
+Accident Date is required,Date / Occurrence,Assistance Required,Exception,Registration Issue
+Accident Date is required,Date / Occurrence,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Disposition at discharge Invalid/Missing,Date / Occurrence,Assistance Required,Exception,Patient Status Code
+Occurrence Code/Date Related,Date / Occurrence,Assistance Required,Exception,Occurrence Code/Date Related
+Occurrence Code/Date Related,Date / Occurrence,Claim Ignored,Resolved,Occurrence Code/Date Related
+Occurrence Code/Date Related,Date / Occurrence,Submission Through Trubrige/CPSI,Resolved,Occurrence Code/Date Related
+Patient Status Code Missing,Status Code Missing,Assistance Required,Exception,Registration Issue
+Admission Type/Source Code Missing/Invalid,Demographic / Registration,Assistance Required,Exception,Admission Type/Source Code
+Admission Type/Source Code Missing/Invalid,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Member ID/Inactive,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Member ID/Inactive,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
+Insurance Address Mismatch,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Insurance Address Mismatch,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
+Missing Payer Information,Demographic / Registration,Route to Insurance,Resolved,Registration Issue
+Non-School based F/C,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Non-School based F/C,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
+Payer Sequence mismatch,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Wrong F/C,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Wrong F/C,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
+Cob Balancing Error/Cob Issue,Insurance Balance Issue,Claim Ignored,Resolved,Correction Done
+Cob Balancing Error/Cob Issue,Insurance Balance Issue,Submission Through Trubrige/CPSI,Resolved,Correction Done
+MR Requested,MR Verified,Claim Ignored,Resolved,Correction Done
+Value Code Missing/Mismatch,New Born Baby,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Revenue Code/CPT/HCPCS,Office/Podiatry Visits,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Missing Rendering/Referring/Attending Provider NPI,Provider / Credentialing,PECOS Enrollment Pending,Exception,Credentialing Issue
+Incorrect/Missing Rendering/Referring/Attending Provider NPI,Provider / Credentialing,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Revenue Code/CPT/HCPCS,Revenue Code 0510,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Revenue Code/CPT/HCPCS,Therapy Type Invalid/Missing,Tasked_Coding,Exception,Coding Issue
+Same Day Service Issue,Unable To Change Queue,Assistance Required,Assistance Needed From NSHA,SDS Related Issue
+Incorrect/Invalid/Missing Member Name,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Member Name,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
+Incorrect/Invalid/Missing Member Relationship,Demographic / Registration,Submission Through Trubrige/CPSI,Resolved,Correction Done
+Incorrect/Invalid/Missing Member Relationship,Demographic / Registration,Tasked_Registration Issue,Exception,Registration Issue
